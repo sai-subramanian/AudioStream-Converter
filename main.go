@@ -29,6 +29,8 @@ var (
 	ClientIDcounter = 1 // Initialize the global client ID counter
 )
 
+// main handler for upgrads the htpps handler to websocket protocol
+// and starts a go routine for the client stream
 func handleAudioStream(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
@@ -49,6 +51,7 @@ func handleAudioStream(c *gin.Context) {
 	go handleClientAudioStream(client)
 }
 
+//function that retrieves data from the websocket stream and calls the converter function
 func handleClientAudioStream(client *Client) {
 	defer func() {
 		client.Conn.Close()
@@ -76,6 +79,7 @@ func handleClientAudioStream(client *Client) {
 	}
 }
 
+//converter function which uses a cli tool to covert the .wav file to flac file an return the buffer
 func convertWAVToFLAC(wavData []byte) ([]byte, error) {
 
 	cmd := exec.Command("ffmpeg", "-i", "pipe:0", "-f", "flac", "pipe:1")
