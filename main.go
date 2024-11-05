@@ -3,11 +3,13 @@ package main
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"bytes"
+	"os/exec"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"os/exec"
 )
 
 var upgrader = websocket.Upgrader{
@@ -22,7 +24,10 @@ type Client struct {
 	OutConn *websocket.Conn
 }
 
-var clients = make(map[string]*Client)
+var (
+	clients        = make(map[string]*Client)
+	ClientIDcounter = 1 // Initialize the global client ID counter
+)
 
 func handleAudioStream(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
@@ -30,8 +35,9 @@ func handleAudioStream(c *gin.Context) {
 		log.Println("Failed to set WebSocket upgrade:", err)
 		return
 	}
-
-	clientID := "testID1"
+	
+	ClientIDcounter++ // Increment the counter for each new client
+	clientID := "testID" + strconv.Itoa(ClientIDcounter)
 
 	client := &Client{
 		ID:   clientID,

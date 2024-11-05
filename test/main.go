@@ -9,6 +9,11 @@ import (
 )
 
 func main() {
+    pathData,err := os.ReadFile("filename.txt")
+    if(err != nil){
+        log.Fatal("Error file name not present in filename.txt:", err)
+    }
+    path := string(pathData)
 	fmt.Println("Starting websocket")
 
 	ws, _, err := websocket.DefaultDialer.Dial("ws://localhost:3000/ws/audio", nil)
@@ -17,7 +22,9 @@ func main() {
 	}
 	defer ws.Close()
 
-	wavData, err := os.ReadFile("file_example_WAV_2MG.wav")
+    
+
+	wavData, err := os.ReadFile(path)
 	if err != nil {
 		log.Fatal("Error reading WAV file:", err)
 	}
